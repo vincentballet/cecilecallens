@@ -59,26 +59,27 @@ const sorted = paintings.sort((a, b) => {
   }
 
   .category__grid {
-    column-count: 1;
-    column-gap: var(--space-lg);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
     margin-top: var(--space-lg);
   }
 
   @media (min-width: 36rem) {
     .category__grid {
-      column-count: 2;
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (min-width: 64rem) {
     .category__grid {
-      column-count: 3;
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 
   @media (min-width: 90rem) {
     .category__grid {
-      column-count: 4;
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 </style>
