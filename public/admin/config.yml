@@ -72,7 +72,7 @@ collections:
       depth: 2
     slug: "{{slug}}"
     summary: "{{title}} — {{category}}"
-    meta: { path: { widget: parent, label: "Catégorie (dossier)", index_file: "" } }
+    meta: { path: { widget: string, label: "Catégorie (dossier)", index_file: "" } }
     fields:
       - label: Titre
         name: title
