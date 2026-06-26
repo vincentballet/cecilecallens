@@ -1,0 +1,80 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+  ogType?: string;
+}
+
+const siteTitle = 'Cecile Callens, artiste peintre';
+const siteDescription =
+  'Portfolio de Cecile Callens, artiste peintre. Peinture abstraite, huile et acrylique. Galerie, expositions et contact.';
+const siteUrl = 'https://cecilecallens.art';
+
+const {
+  title = siteTitle,
+  description = siteDescription,
+  canonicalUrl = new URL(Astro.url.pathname, siteUrl).href,
+  ogImage = `${siteUrl}/og-default.jpg`,
+  ogType = 'website',
+} = Astro.props;
+
+const fullTitle =
+  title === siteTitle ? title : `${title} — ${siteTitle}`;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content={siteTitle} />
+
+    <!-- Fonts — self-hosted, preloaded -->
+    <link
+      rel="preload"
+      href="/fonts/raleway-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/raleway-latin-ext.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/cormorant-garamond-italic-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- JSON-LD slot — pages inject structured data here -->
+    <slot name="json-ld" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

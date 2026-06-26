@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Cecile Callens',
+  url: 'https://cecilecallens.art',
+  jobTitle: 'Artiste peintre',
+  email: 'cecilecallensartiste@gmail.com',
+  sameAs: [],
+});
+---
+
+<BaseLayout>
+  <Fragment slot="json-ld">
+    <script is:inline type="application/ld+json" set:html={jsonLd} />
+  </Fragment>
+
+  <main class="hero">
+    <div class="hero__inner container">
+      <h1 class="hero__title">Cecile Callens</h1>
+      <p class="hero__subtitle accent">artiste peintre</p>
+      <p class="hero__text">
+        Peinture abstraite. Huile, acrylique, technique mixte.
+      </p>
+      <p class="hero__cta">
+        Galerie, expositions et parcours a venir.
+      </p>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    text-align: center;
+    background-color: var(--color-bg);
+  }
+
+  .hero__inner {
+    padding-block: var(--space-xl);
+  }
+
+  .hero__title {
+    font-size: var(--text-3xl);
+    font-weight: 100;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-black);
+  }
+
+  .hero__subtitle {
+    margin-block-start: var(--space-sm);
+    font-size: var(--text-xl);
+    color: var(--color-grey);
+  }
+
+  .hero__text {
+    margin-block-start: var(--space-lg);
+    font-size: var(--text-lg);
+    font-weight: 300;
+    color: var(--color-dark);
+  }
+
+  .hero__cta {
+    margin-block-start: var(--space-md);
+    font-size: var(--text-sm);
+    color: var(--color-grey);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+</style>
