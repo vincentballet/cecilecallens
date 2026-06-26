@@ -1,0 +1,17 @@
+main:
+  bioParagraphs:
+    - "Mon enfance passée en Afrique, puis en Corse, mes nombreux voyages m'ont toujours conduit à vouloir reproduire sur une feuille de dessin ou quelconque support, les couleurs qui s'offraient à ma vue. Les pastels ont d'abord eu ma préférence, pour ensuite laisser place aux tubes pigmentés de diverses couleurs."
+    - "C'est à l'âge de vingt ans, suite à ma rencontre avec l'artiste peintre PAJO et grâce à son enseignement, que j'ai réellement commencé à peindre, d'abord dans son atelier, puis ensuite seule."
+    - "Ma peinture le plus souvent abstraite se décline de couleurs qui représentent la caractéristique incontournable de mes créations. J'aime travailler les fondus pour faire rejaillir la lumière dans mes toiles, et c'est au travers des teintes bleues et ocres que je m'exprime le plus aisément; Ce faisant, je voyage à travers le temps et l'espace..."
+    - "Un de mes domaines de prédilection est celui de la préhistoire ou tel l'un des premiers habitants de notre planète, j'ai découvert le pouvoir des couleurs et celui de l'exprimer; Le grand écrivain Joseph Joffo (auteur du best seller un sac de billes), devenu mon ami, l'avait très bien compris et m'avait conseillé de ne peindre que des toiles ocres. Il s'est d'ailleurs amusé à écrire une pensée sur l'une d'entre elle qu'il aimait tout particulièrement;"
+    - "Je vous invite à découvrir la femme que je suis, au travers mon univers pictural, de mes ressentis, de mes émotions, et par la rencontre du rêve et de l'imagination."
+  artistPhoto: ../../assets/site/artist.jpg
+  heroHighlight:
+    text: "Exposition du 27 Octobre au 11 Novembre 2025, Salle St Esprit, Valbonne."
+  contactEmail: cecilecallensartiste@gmail.com
+  contactPhone: "+33611250191"
+  seo:
+    title: "Cécile Callens, artiste peintre"
+    description: "Portfolio de Cécile Callens, artiste peintre. Peinture abstraite, huile et acrylique. Galerie, expositions et contact."
+    ogImage: ../../assets/site/featured.jpg
+  # analyticsId: "G-LCT97HKZXH"  # TODO: confirmer avec la cliente avant de réactiver

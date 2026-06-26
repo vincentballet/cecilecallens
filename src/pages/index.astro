@@ -1,10 +1,18 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+const categories = await getCollection('categories');
+const paintings = await getCollection('paintings');
+const expositions = await getCollection('expositions');
+const settings = await getEntry('siteSettings', 'main');
+
+categories.sort((a, b) => a.data.order - b.data.order);
 
 const jsonLd = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: 'Cecile Callens',
+  name: 'Cécile Callens',
   url: 'https://cecilecallens.art',
   jobTitle: 'Artiste peintre',
   email: 'cecilecallensartiste@gmail.com',
@@ -17,60 +25,95 @@ const jsonLd = JSON.stringify({
     <script is:inline type="application/ld+json" set:html={jsonLd} />
   </Fragment>
 
-  <main class="hero">
-    <div class="hero__inner container">
-      <h1 class="hero__title">Cecile Callens</h1>
-      <p class="hero__subtitle accent">artiste peintre</p>
-      <p class="hero__text">
-        Peinture abstraite. Huile, acrylique, technique mixte.
-      </p>
-      <p class="hero__cta">
-        Galerie, expositions et parcours a venir.
-      </p>
-    </div>
+  <main class="debug container">
+    <h1>Content collections debug</h1>
+
+    <section>
+      <h2>Site settings</h2>
+      {settings && (
+        <ul>
+          <li>Bio paragraphs: {settings.data.bioParagraphs.length}</li>
+          <li>Contact: {settings.data.contactEmail} / {settings.data.contactPhone}</li>
+          <li>Hero: {settings.data.heroHighlight.text}</li>
+        </ul>
+      )}
+    </section>
+
+    <section>
+      <h2>Categories ({categories.length})</h2>
+      <ul>
+        {categories.map((cat) => (
+          <li>{cat.data.order}. {cat.data.title} ({cat.data.slug})</li>
+        ))}
+      </ul>
+    </section>
+
+    <section>
+      <h2>Paintings ({paintings.length})</h2>
+      {categories.map((cat) => {
+        const catPaintings = paintings
+          .filter((p) => p.data.category.id === cat.id)
+          .sort((a, b) => a.data.order - b.data.order);
+        return (
+          <details>
+            <summary>{cat.data.title} ({catPaintings.length})</summary>
+            <ol>
+              {catPaintings.map((p) => (
+                <li>
+                  {p.data.title} — {p.data.dimensions}, {p.data.technique}
+                  {p.data.note && <em> [{p.data.note}]</em>}
+                </li>
+              ))}
+            </ol>
+          </details>
+        );
+      })}
+    </section>
+
+    <section>
+      <h2>Expositions ({expositions.length})</h2>
+      <ul>
+        {expositions.map((expo) => (
+          <li>{expo.data.title} — {expo.data.location} ({expo.data.startDate.toLocaleDateString('fr-FR')} - {expo.data.endDate.toLocaleDateString('fr-FR')})</li>
+        ))}
+      </ul>
+    </section>
   </main>
 </BaseLayout>
 
 <style>
-  .hero {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100dvh;
-    text-align: center;
-    background-color: var(--color-bg);
-  }
-
-  .hero__inner {
+  .debug {
     padding-block: var(--space-xl);
   }
 
-  .hero__title {
-    font-size: var(--text-3xl);
-    font-weight: 100;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--color-black);
+  .debug h1 {
+    font-weight: 400;
+    margin-block-end: var(--space-lg);
   }
 
-  .hero__subtitle {
-    margin-block-start: var(--space-sm);
-    font-size: var(--text-xl);
+  .debug h2 {
+    font-weight: 400;
+    margin-block: var(--space-md);
+  }
+
+  .debug section {
+    margin-block-end: var(--space-lg);
+  }
+
+  .debug ul, .debug ol {
+    list-style: disc;
+    padding-inline-start: var(--space-lg);
+  }
+
+  .debug ol {
+    list-style: decimal;
+  }
+
+  .debug details {
+    margin-block: var(--space-sm);
+  }
+
+  .debug em {
     color: var(--color-grey);
-  }
-
-  .hero__text {
-    margin-block-start: var(--space-lg);
-    font-size: var(--text-lg);
-    font-weight: 300;
-    color: var(--color-dark);
-  }
-
-  .hero__cta {
-    margin-block-start: var(--space-md);
-    font-size: var(--text-sm);
-    color: var(--color-grey);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
   }
 </style>
