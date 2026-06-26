@@ -17,7 +17,7 @@ backend:
   name: git-gateway
   branch: main
 
-local_backend: true
+# local_backend: true — uncomment for local dev with npx decap-server
 
 locale: fr
 
