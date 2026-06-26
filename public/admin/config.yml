@@ -1,0 +1,258 @@
+# ------------------------------------------------------------------
+# Decap CMS — Cécile Callens, artiste peintre
+# ------------------------------------------------------------------
+# Backend: git-gateway (pairs with Netlify Identity, prompt 05).
+# To switch to GitHub OAuth, replace the backend block below
+# with:  name: github, repo: <owner>/<repo>, branch: main
+# Collections and media config stay unchanged.
+# ------------------------------------------------------------------
+# Editorial workflow: DISABLED (direct publish).
+# Rationale: the site has a single non-technical editor. The draft/
+# review/publish workflow creates extra steps (PR-based) that add
+# friction with no real benefit when there is no review team. Direct
+# publish keeps things simple: edit, save, the site rebuilds.
+# ------------------------------------------------------------------
+
+backend:
+  name: git-gateway
+  branch: main
+
+local_backend: true
+
+locale: fr
+
+media_folder: src/assets
+public_folder: /src/assets
+
+collections:
+  # ----------------------------------------------------------------
+  # Catégories (familles de couleurs)
+  # ----------------------------------------------------------------
+  - name: categories
+    label: Catégories
+    label_singular: Catégorie
+    folder: src/content/categories
+    format: yaml
+    extension: yaml
+    create: true
+    slug: "{{slug}}"
+    identifier_field: slug
+    sortable_fields: [order, title]
+    summary: "{{title}} ({{slug}}, ordre: {{order}})"
+    fields:
+      - label: Titre
+        name: title
+        widget: string
+        hint: "Nom affiché, ex. « Les ocres »"
+      - label: Identifiant (slug)
+        name: slug
+        widget: string
+        hint: "Identifiant court sans espaces, ex. « ocre ». Doit correspondre au nom du sous-dossier des tableaux."
+      - label: Ordre d'affichage
+        name: order
+        widget: number
+        value_type: int
+        hint: "Les catégories sont affichées dans cet ordre (1 = première)."
+      - label: Description
+        name: description
+        widget: text
+        required: false
+
+  # ----------------------------------------------------------------
+  # Tableaux
+  # ----------------------------------------------------------------
+  - name: paintings
+    label: Tableaux
+    label_singular: Tableau
+    folder: src/content/paintings
+    format: frontmatter
+    extension: md
+    create: true
+    nested:
+      depth: 2
+    slug: "{{slug}}"
+    summary: "{{title}} — {{category}}"
+    meta: { path: { widget: parent, label: "Catégorie (dossier)", index_file: "" } }
+    fields:
+      - label: Titre
+        name: title
+        widget: string
+      - label: Catégorie
+        name: category
+        widget: relation
+        collection: categories
+        value_field: slug
+        search_fields: [title, slug]
+        display_fields: [title]
+        hint: "Famille de couleurs à laquelle appartient le tableau."
+      - label: Image
+        name: image
+        widget: image
+        media_folder: /src/assets/paintings
+        public_folder: ../../../assets/paintings
+        hint: "Photo du tableau. Les images existantes sont classées par catégorie."
+      - label: Dimensions
+        name: dimensions
+        widget: string
+        hint: "Format libre, ex. « 116cm x 84cm » ou « tryptique de 50cm x 150cm »."
+      - label: Technique
+        name: technique
+        widget: select
+        options:
+          - label: Acrylique
+            value: acrylique
+          - label: Huile
+            value: huile
+          - label: Technique mixte
+            value: technique mixte
+          - label: Mixte
+            value: mixte
+          - label: Pastel
+            value: pastel
+      - label: Année
+        name: year
+        widget: number
+        value_type: int
+        required: false
+        hint: "Année de réalisation (facultatif)."
+      - label: Description
+        name: description
+        widget: text
+        required: false
+      - label: Ordre d'affichage
+        name: order
+        widget: number
+        value_type: int
+        default: 0
+        hint: "Ordre dans la catégorie (0 = par défaut)."
+      - label: Disponible
+        name: available
+        widget: boolean
+        default: true
+        hint: "Décocher si le tableau est vendu ou fait partie d'une collection personnelle."
+      - label: Note
+        name: note
+        widget: string
+        required: false
+        hint: "Ex. « collection personnelle » ou « vendu »."
+
+  # ----------------------------------------------------------------
+  # Expositions
+  # ----------------------------------------------------------------
+  - name: expositions
+    label: Expositions
+    label_singular: Exposition
+    folder: src/content/expositions
+    format: frontmatter
+    extension: md
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}} — {{location}}"
+    sortable_fields: [startDate, title]
+    fields:
+      - label: Titre
+        name: title
+        widget: string
+      - label: Lieu
+        name: location
+        widget: string
+      - label: Date de début
+        name: startDate
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "DD/MM/YYYY"
+        time_format: false
+        hint: "Date d'ouverture de l'exposition."
+      - label: Date de fin
+        name: endDate
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "DD/MM/YYYY"
+        time_format: false
+        hint: "Date de fermeture de l'exposition."
+      - label: Image
+        name: image
+        widget: image
+        required: false
+        media_folder: /src/assets/expo
+        public_folder: ../../assets/expo
+        hint: "Photo ou affiche de l'exposition (facultatif)."
+      - label: Description
+        name: description
+        widget: text
+        required: false
+
+  # ----------------------------------------------------------------
+  # Paramètres du site (fichier unique)
+  # ----------------------------------------------------------------
+  # Astro's file() loader reads this YAML as a map keyed by entry id.
+  # The file on disk has a top-level "main:" key wrapping all fields.
+  # We model this as a files collection with a single "main" object.
+  # ----------------------------------------------------------------
+  - name: siteSettings
+    label: Paramètres du site
+    editor:
+      preview: false
+    files:
+      - name: settings
+        label: Paramètres généraux
+        file: src/content/siteSettings/settings.yaml
+        fields:
+          - label: Contenu principal
+            name: main
+            widget: object
+            fields:
+              - label: Biographie
+                name: bioParagraphs
+                widget: list
+                field:
+                  label: Paragraphe
+                  name: paragraph
+                  widget: text
+                hint: "Chaque élément de la liste est un paragraphe de la biographie."
+              - label: Photo de l'artiste
+                name: artistPhoto
+                widget: image
+                media_folder: /src/assets/site
+                public_folder: ../../assets/site
+              - label: Mise en avant (héro)
+                name: heroHighlight
+                widget: object
+                fields:
+                  - label: Texte
+                    name: text
+                    widget: string
+                    hint: "Texte affiché en évidence, ex. une exposition à venir."
+                  - label: Lien
+                    name: link
+                    widget: string
+                    required: false
+                    hint: "URL optionnelle associée au texte."
+              - label: Email de contact
+                name: contactEmail
+                widget: string
+              - label: Téléphone de contact
+                name: contactPhone
+                widget: string
+                hint: "Format international, ex. « +33611250191 »."
+              - label: SEO
+                name: seo
+                widget: object
+                fields:
+                  - label: Titre de la page
+                    name: title
+                    widget: string
+                  - label: Description
+                    name: description
+                    widget: text
+                    hint: "Description affichée dans les résultats de recherche."
+                  - label: Image Open Graph
+                    name: ogImage
+                    widget: image
+                    media_folder: /src/assets/site
+                    public_folder: ../../assets/site
+              - label: ID Analytics
+                name: analyticsId
+                widget: string
+                required: false
+                hint: "Identifiant Google Analytics (ex. G-XXXXXXXXXX). Laisser vide pour désactiver."
