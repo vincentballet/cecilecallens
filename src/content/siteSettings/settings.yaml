@@ -32,4 +32,4 @@ main:
     title: Cécile Callens, artiste peintre
     description: Portfolio de Cécile Callens, artiste peintre. Peinture abstraite,
       huile et acrylique. Galerie, expositions et contact.
-    ogImage: ../../assets/site/screenshot-2026-06-26-at-11.46.05.png
+    ogImage: /og-default.jpg
