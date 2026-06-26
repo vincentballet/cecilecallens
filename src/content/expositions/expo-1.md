@@ -1,8 +1,8 @@
 ---
-title: "TODO: titre de l'exposition"
-location: "TODO: lieu"
-startDate: 2020-01-01
-endDate: 2020-01-01
+title: Couleurs du temps
+location: Tourrettes
+startDate: 2022-08-02
+endDate: 2022-08-14
 image: ../../assets/expo/expo1.jpg
-description: "TODO: demander les détails à la cliente. Image expo1.jpg du site original."
+description: ""
 ---
