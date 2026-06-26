@@ -1,0 +1,110 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  settings: CollectionEntry<'siteSettings'>;
+}
+
+const { settings } = Astro.props;
+const { bioParagraphs, artistPhoto } = settings.data;
+---
+
+<section id="hero" class="hero">
+  <div class="hero__inner container">
+    <div class="hero__text">
+      <h1 class="hero__name">Cécile Callens</h1>
+      <p class="hero__subtitle accent">artiste peintre</p>
+      <div class="hero__bio">
+        {bioParagraphs.map((para) => (
+          <p>{para}</p>
+        ))}
+      </div>
+    </div>
+    <div class="hero__portrait">
+      <Image
+        src={artistPhoto}
+        alt="Cécile Callens, artiste peintre"
+        width={600}
+        height={800}
+        class="hero__img"
+        loading="eager"
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-top: calc(3.5rem + var(--space-2xl));
+    padding-bottom: var(--space-2xl);
+    background: var(--color-white);
+  }
+
+  .hero__inner {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .hero__name {
+    font-family: var(--font-sans);
+    font-weight: 100;
+    font-size: var(--text-3xl);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-xs);
+  }
+
+  .hero__subtitle {
+    font-size: var(--text-xl);
+    color: var(--color-grey);
+    margin-bottom: var(--space-xl);
+  }
+
+  .hero__bio {
+    max-width: 40rem;
+  }
+
+  .hero__bio p {
+    margin-bottom: var(--space-md);
+    line-height: 1.8;
+    color: var(--color-dark);
+  }
+
+  .hero__bio p:last-child {
+    margin-bottom: 0;
+  }
+
+  .hero__portrait {
+    display: flex;
+    justify-content: center;
+  }
+
+  .hero__img {
+    width: 100%;
+    max-width: 24rem;
+    height: auto;
+    object-fit: cover;
+  }
+
+  @media (min-width: 48rem) {
+    .hero__inner {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+    }
+
+    .hero__portrait {
+      justify-content: flex-end;
+    }
+
+    .hero__img {
+      max-width: 100%;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .hero__inner {
+      grid-template-columns: 3fr 2fr;
+    }
+  }
+</style>

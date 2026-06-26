@@ -1,0 +1,191 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  categories: CollectionEntry<'categories'>[];
+}
+
+const { categories } = Astro.props;
+---
+
+<header class="header">
+  <div class="header__inner container">
+    <a href="#hero" class="header__logo">Cécile Callens</a>
+    <button
+      class="header__toggle"
+      aria-label="Ouvrir le menu"
+      aria-expanded="false"
+      aria-controls="nav-main"
+    >
+      <span class="header__toggle-bar"></span>
+      <span class="header__toggle-bar"></span>
+      <span class="header__toggle-bar"></span>
+    </button>
+    <nav id="nav-main" class="header__nav" aria-label="Navigation principale">
+      <ul class="header__list">
+        <li><a href="#galerie" class="header__link">Galerie</a></li>
+        {categories.map((cat) => (
+          <li>
+            <a href={`#${cat.data.slug}`} class="header__link header__link--sub">
+              {cat.data.title}
+            </a>
+          </li>
+        ))}
+        <li><a href="#expositions" class="header__link">Expositions</a></li>
+        <li><a href="#contact" class="header__link">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector('.header__toggle') as HTMLButtonElement;
+  const nav = document.getElementById('nav-main') as HTMLElement;
+
+  toggle.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    nav.classList.toggle('header__nav--open');
+    toggle.setAttribute('aria-label', expanded ? 'Ouvrir le menu' : 'Fermer le menu');
+  });
+
+  // Close nav on link click (mobile)
+  nav.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      nav.classList.remove('header__nav--open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Ouvrir le menu');
+    });
+  });
+</script>
+
+<style>
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-muted);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 3.5rem;
+  }
+
+  .header__logo {
+    font-family: var(--font-sans);
+    font-weight: 100;
+    font-size: var(--text-lg);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .header__toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 0.5rem;
+    z-index: 110;
+  }
+
+  .header__toggle-bar {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--color-black);
+    transition: transform 0.3s var(--ease-out), opacity 0.3s var(--ease-out);
+  }
+
+  .header__toggle[aria-expanded="true"] .header__toggle-bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .header__toggle[aria-expanded="true"] .header__toggle-bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .header__toggle[aria-expanded="true"] .header__toggle-bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .header__nav {
+    display: none;
+  }
+
+  .header__nav--open {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.98);
+    padding: 5rem var(--gutter) var(--space-lg);
+    overflow-y: auto;
+  }
+
+  .header__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .header__link {
+    display: block;
+    font-size: var(--text-lg);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    padding: var(--space-xs) 0;
+    transition: color 0.2s;
+  }
+
+  .header__link:hover,
+  .header__link:focus-visible {
+    color: var(--color-grey);
+  }
+
+  .header__link--sub {
+    font-size: var(--text-sm);
+    padding-left: var(--space-md);
+    color: var(--color-grey);
+    font-weight: 400;
+  }
+
+  .header__link--sub:hover,
+  .header__link--sub:focus-visible {
+    color: var(--color-black);
+  }
+
+  @media (min-width: 64rem) {
+    .header__toggle {
+      display: none;
+    }
+
+    .header__nav {
+      display: block;
+    }
+
+    .header__list {
+      flex-direction: row;
+      align-items: center;
+      gap: 0;
+    }
+
+    .header__link {
+      font-size: var(--text-xs);
+      padding: var(--space-xs) var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .header__link--sub {
+      display: none;
+    }
+  }
+</style>

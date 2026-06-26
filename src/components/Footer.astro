@@ -1,0 +1,26 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer__inner container">
+    <p class="footer__copy">&copy; {year} Cécile Callens. Tous droits réservés.</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: var(--space-lg);
+    background: var(--color-black);
+    color: var(--color-grey);
+  }
+
+  .footer__inner {
+    text-align: center;
+  }
+
+  .footer__copy {
+    font-size: var(--text-xs);
+    letter-spacing: 0.05em;
+  }
+</style>

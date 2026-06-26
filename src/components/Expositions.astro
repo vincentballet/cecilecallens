@@ -1,0 +1,199 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  expositions: CollectionEntry<'expositions'>[];
+}
+
+const { expositions } = Astro.props;
+
+const today = new Date('2026-06-26');
+
+const upcoming = expositions
+  .filter((e) => e.data.endDate >= today)
+  .sort((a, b) => a.data.startDate.getTime() - b.data.startDate.getTime());
+
+const past = expositions
+  .filter((e) => e.data.endDate < today)
+  .sort((a, b) => b.data.startDate.getTime() - a.data.startDate.getTime());
+
+function formatDate(d: Date): string {
+  return d.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+---
+
+<section id="expositions" class="expositions">
+  <div class="expositions__inner container">
+    <h2 class="expositions__heading">Expositions</h2>
+
+    {upcoming.length > 0 && (
+      <div class="expositions__group">
+        <h3 class="expositions__subheading">Prochaines expositions</h3>
+        <ul class="expositions__list">
+          {upcoming.map((expo) => (
+            <li class="expositions__item">
+              {expo.data.image && (
+                <div class="expositions__image-wrap">
+                  <Image
+                    src={expo.data.image}
+                    alt={expo.data.title}
+                    width={600}
+                    height={400}
+                    class="expositions__img"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              <div class="expositions__content">
+                <h4 class="expositions__title">{expo.data.title}</h4>
+                <p class="expositions__date">
+                  Du {formatDate(expo.data.startDate)} au {formatDate(expo.data.endDate)}
+                </p>
+                <p class="expositions__location">{expo.data.location}</p>
+                {expo.data.description && (
+                  <p class="expositions__description">{expo.data.description}</p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    {past.length > 0 && (
+      <div class="expositions__group">
+        <h3 class="expositions__subheading">Expositions passées</h3>
+        <ul class="expositions__list">
+          {past.map((expo) => (
+            <li class="expositions__item expositions__item--past">
+              {expo.data.image && (
+                <div class="expositions__image-wrap">
+                  <Image
+                    src={expo.data.image}
+                    alt={expo.data.title}
+                    width={600}
+                    height={400}
+                    class="expositions__img"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              <div class="expositions__content">
+                <h4 class="expositions__title">{expo.data.title}</h4>
+                <p class="expositions__date">
+                  Du {formatDate(expo.data.startDate)} au {formatDate(expo.data.endDate)}
+                </p>
+                <p class="expositions__location">{expo.data.location}</p>
+                {expo.data.description && (
+                  <p class="expositions__description">{expo.data.description}</p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .expositions {
+    padding-block: var(--space-2xl);
+    background: var(--color-white);
+    border-top: 1px solid var(--color-muted);
+  }
+
+  .expositions__heading {
+    font-family: var(--font-sans);
+    font-weight: 100;
+    font-size: var(--text-2xl);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+
+  .expositions__group {
+    margin-bottom: var(--space-xl);
+  }
+
+  .expositions__group:last-child {
+    margin-bottom: 0;
+  }
+
+  .expositions__subheading {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--text-lg);
+    color: var(--color-grey);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+  }
+
+  .expositions__list {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  .expositions__item {
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: var(--color-bg);
+    border: 1px solid var(--color-muted);
+  }
+
+  .expositions__item--past {
+    opacity: 0.7;
+  }
+
+  .expositions__image-wrap {
+    overflow: hidden;
+  }
+
+  .expositions__img {
+    width: 100%;
+    height: auto;
+  }
+
+  .expositions__title {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--text-lg);
+  }
+
+  .expositions__date {
+    font-size: var(--text-sm);
+    color: var(--color-grey);
+    margin-top: var(--space-xs);
+  }
+
+  .expositions__location {
+    font-size: var(--text-sm);
+    color: var(--color-dark);
+    margin-top: var(--space-xs);
+  }
+
+  .expositions__description {
+    font-size: var(--text-sm);
+    color: var(--color-grey);
+    margin-top: var(--space-sm);
+    line-height: 1.6;
+  }
+
+  @media (min-width: 36rem) {
+    .expositions__list {
+      grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    }
+
+    .expositions__item {
+      grid-template-rows: auto 1fr;
+    }
+  }
+</style>

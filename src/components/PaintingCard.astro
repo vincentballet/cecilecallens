@@ -1,0 +1,113 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  painting: CollectionEntry<'paintings'>;
+  loading?: 'lazy' | 'eager';
+}
+
+const { painting, loading = 'lazy' } = Astro.props;
+const { title, image, dimensions, technique, note } = painting.data;
+---
+
+<figure class="painting">
+  <div class="painting__frame">
+    <Image
+      src={image}
+      alt={title}
+      width={800}
+      height={600}
+      class="painting__img"
+      loading={loading}
+      decoding={loading === 'eager' ? 'sync' : 'async'}
+    />
+    <button
+      class="painting__zoom"
+      aria-label={`Agrandir : ${title}`}
+      data-src={typeof image === 'object' && 'src' in image ? image.src : ''}
+      data-alt={title}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <polyline points="9 21 3 21 3 15"></polyline>
+        <line x1="21" y1="3" x2="14" y2="10"></line>
+        <line x1="3" y1="21" x2="10" y2="14"></line>
+      </svg>
+    </button>
+  </div>
+  <figcaption class="painting__caption">
+    <h3 class="painting__title">{title}</h3>
+    <p class="painting__meta">{dimensions}, {technique}</p>
+    {note && <p class="painting__note accent">{note}</p>}
+  </figcaption>
+</figure>
+
+<style>
+  .painting {
+    break-inside: avoid;
+    margin-bottom: var(--space-lg);
+  }
+
+  .painting__frame {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-tile);
+    line-height: 0;
+  }
+
+  .painting__img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  .painting__frame:hover .painting__img {
+    transform: scale(1.02);
+  }
+
+  .painting__zoom {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+    color: var(--color-dark);
+  }
+
+  .painting__frame:hover .painting__zoom,
+  .painting__zoom:focus-visible {
+    opacity: 1;
+  }
+
+  .painting__caption {
+    padding-top: var(--space-sm);
+  }
+
+  .painting__title {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+  }
+
+  .painting__meta {
+    font-size: var(--text-xs);
+    color: var(--color-grey);
+    margin-top: 2px;
+  }
+
+  .painting__note {
+    font-size: var(--text-xs);
+    color: var(--color-grey);
+    margin-top: 2px;
+  }
+</style>

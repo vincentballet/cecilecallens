@@ -1,5 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Featured from '../components/Featured.astro';
+import CategorySection from '../components/CategorySection.astro';
+import Expositions from '../components/Expositions.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
 import { getCollection, getEntry } from 'astro:content';
 
 const categories = await getCollection('categories');
@@ -7,113 +14,211 @@ const paintings = await getCollection('paintings');
 const expositions = await getCollection('expositions');
 const settings = await getEntry('siteSettings', 'main');
 
+if (!settings) throw new Error('siteSettings not found');
+
 categories.sort((a, b) => a.data.order - b.data.order);
 
-const jsonLd = JSON.stringify({
+const paintingsByCategory = new Map<string, typeof paintings>();
+for (const cat of categories) {
+  const catPaintings = paintings.filter((p) => p.data.category.id === cat.id);
+  paintingsByCategory.set(cat.id, catPaintings);
+}
+
+// JSON-LD: Person
+const personLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: 'Cécile Callens',
   url: 'https://cecilecallens.art',
   jobTitle: 'Artiste peintre',
-  email: 'cecilecallensartiste@gmail.com',
-  sameAs: [],
-});
+  email: settings.data.contactEmail,
+  telephone: settings.data.contactPhone,
+  description: settings.data.seo.description,
+};
+
+// JSON-LD: VisualArtwork for each painting
+const artworkLd = paintings.map((p) => ({
+  '@context': 'https://schema.org',
+  '@type': 'VisualArtwork',
+  name: p.data.title,
+  artMedium: p.data.technique,
+  creator: {
+    '@type': 'Person',
+    name: 'Cécile Callens',
+  },
+}));
+
+// JSON-LD: Event for expositions with real dates
+const today = new Date('2026-06-26');
+const eventLd = expositions
+  .filter((e) => e.data.title && !e.data.title.startsWith('TODO'))
+  .map((e) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: e.data.title,
+    startDate: e.data.startDate.toISOString().split('T')[0],
+    endDate: e.data.endDate.toISOString().split('T')[0],
+    location: {
+      '@type': 'Place',
+      name: e.data.location,
+    },
+    organizer: {
+      '@type': 'Person',
+      name: 'Cécile Callens',
+    },
+    eventStatus: e.data.endDate >= today
+      ? 'https://schema.org/EventScheduled'
+      : 'https://schema.org/EventPostponed',
+  }));
+
+const allLd = [personLd, ...artworkLd, ...eventLd];
 ---
 
 <BaseLayout>
   <Fragment slot="json-ld">
-    <script is:inline type="application/ld+json" set:html={jsonLd} />
+    {allLd.map((ld) => (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(ld)} />
+    ))}
   </Fragment>
 
-  <main class="debug container">
-    <h1>Content collections debug</h1>
+  <Header categories={categories} />
 
-    <section>
-      <h2>Site settings</h2>
-      {settings && (
-        <ul>
-          <li>Bio paragraphs: {settings.data.bioParagraphs.length}</li>
-          <li>Contact: {settings.data.contactEmail} / {settings.data.contactPhone}</li>
-          <li>Hero: {settings.data.heroHighlight.text}</li>
-        </ul>
-      )}
-    </section>
+  <main>
+    <Hero settings={settings} />
+    <Featured settings={settings} />
 
-    <section>
-      <h2>Categories ({categories.length})</h2>
-      <ul>
-        {categories.map((cat) => (
-          <li>{cat.data.order}. {cat.data.title} ({cat.data.slug})</li>
-        ))}
-      </ul>
-    </section>
+    <div id="galerie">
+      {categories.map((cat, i) => (
+        <CategorySection
+          category={cat}
+          paintings={paintingsByCategory.get(cat.id) || []}
+          isFirst={i === 0}
+        />
+      ))}
+    </div>
 
-    <section>
-      <h2>Paintings ({paintings.length})</h2>
-      {categories.map((cat) => {
-        const catPaintings = paintings
-          .filter((p) => p.data.category.id === cat.id)
-          .sort((a, b) => a.data.order - b.data.order);
-        return (
-          <details>
-            <summary>{cat.data.title} ({catPaintings.length})</summary>
-            <ol>
-              {catPaintings.map((p) => (
-                <li>
-                  {p.data.title} — {p.data.dimensions}, {p.data.technique}
-                  {p.data.note && <em> [{p.data.note}]</em>}
-                </li>
-              ))}
-            </ol>
-          </details>
-        );
-      })}
-    </section>
-
-    <section>
-      <h2>Expositions ({expositions.length})</h2>
-      <ul>
-        {expositions.map((expo) => (
-          <li>{expo.data.title} — {expo.data.location} ({expo.data.startDate.toLocaleDateString('fr-FR')} - {expo.data.endDate.toLocaleDateString('fr-FR')})</li>
-        ))}
-      </ul>
-    </section>
+    <Expositions expositions={expositions} />
+    <Contact settings={settings} />
   </main>
+
+  <Footer />
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image agrandie" hidden>
+    <button class="lightbox__close" aria-label="Fermer">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <div class="lightbox__content">
+      <img class="lightbox__img" src="" alt="" />
+    </div>
+  </div>
 </BaseLayout>
 
-<style>
-  .debug {
-    padding-block: var(--space-xl);
+<script>
+  const lightbox = document.getElementById('lightbox') as HTMLDivElement;
+  const lbImg = lightbox.querySelector('.lightbox__img') as HTMLImageElement;
+  const lbClose = lightbox.querySelector('.lightbox__close') as HTMLButtonElement;
+
+  function openLightbox(src: string, alt: string) {
+    lbImg.src = src;
+    lbImg.alt = alt;
+    lightbox.hidden = false;
+    document.body.style.overflow = 'hidden';
+    lbClose.focus();
   }
 
-  .debug h1 {
-    font-weight: 400;
-    margin-block-end: var(--space-lg);
+  function closeLightbox() {
+    lightbox.hidden = true;
+    document.body.style.overflow = '';
+    lbImg.src = '';
   }
 
-  .debug h2 {
-    font-weight: 400;
-    margin-block: var(--space-md);
+  // Zoom buttons on painting cards
+  document.querySelectorAll('.painting__zoom').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const el = e.currentTarget as HTMLButtonElement;
+      // Get the optimised image src from the sibling <img> or <picture>
+      const frame = el.closest('.painting__frame');
+      const img = frame?.querySelector('img') as HTMLImageElement | null;
+      if (img) {
+        openLightbox(img.currentSrc || img.src, el.dataset.alt || '');
+      }
+    });
+  });
+
+  // Also allow clicking the painting image directly
+  document.querySelectorAll('.painting__img').forEach((img) => {
+    const el = img as HTMLImageElement;
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', () => {
+      openLightbox(el.currentSrc || el.src, el.alt);
+    });
+  });
+
+  lbClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox || e.target === lightbox.querySelector('.lightbox__content')) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !lightbox.hidden) {
+      closeLightbox();
+    }
+  });
+</script>
+
+<style is:global>
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
   }
 
-  .debug section {
-    margin-block-end: var(--space-lg);
+  .lightbox[hidden] {
+    display: none;
   }
 
-  .debug ul, .debug ol {
-    list-style: disc;
-    padding-inline-start: var(--space-lg);
+  .lightbox__close {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    color: white;
+    z-index: 210;
+    padding: var(--space-sm);
+    transition: opacity 0.2s;
   }
 
-  .debug ol {
-    list-style: decimal;
+  .lightbox__close:hover {
+    opacity: 0.7;
   }
 
-  .debug details {
-    margin-block: var(--space-sm);
+  .lightbox__content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
   }
 
-  .debug em {
-    color: var(--color-grey);
+  .lightbox__img {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+  }
+
+  /* Smooth scroll for anchor links */
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 4rem;
   }
 </style>

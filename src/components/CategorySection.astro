@@ -1,0 +1,84 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import PaintingCard from './PaintingCard.astro';
+
+interface Props {
+  category: CollectionEntry<'categories'>;
+  paintings: CollectionEntry<'paintings'>[];
+  isFirst?: boolean;
+}
+
+const { category, paintings, isFirst = false } = Astro.props;
+const sorted = paintings.sort((a, b) => {
+  if (a.data.order !== b.data.order) return a.data.order - b.data.order;
+  return a.data.title.localeCompare(b.data.title, 'fr');
+});
+---
+
+<section id={category.data.slug} class="category" aria-label={category.data.title}>
+  <div class="category__inner container">
+    <h2 class="category__title">{category.data.title}</h2>
+    {category.data.description && (
+      <p class="category__description accent">{category.data.description}</p>
+    )}
+    <div class="category__grid">
+      {sorted.map((painting, i) => (
+        <PaintingCard
+          painting={painting}
+          loading={isFirst && i < 4 ? 'eager' : 'lazy'}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .category {
+    padding-block: var(--space-xl);
+  }
+
+  .category:nth-child(even) {
+    background: var(--color-bg);
+  }
+
+  .category__title {
+    font-family: var(--font-sans);
+    font-weight: 100;
+    font-size: var(--text-2xl);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-sm);
+    text-align: center;
+  }
+
+  .category__description {
+    text-align: center;
+    color: var(--color-grey);
+    margin-bottom: var(--space-lg);
+    font-size: var(--text-lg);
+  }
+
+  .category__grid {
+    column-count: 1;
+    column-gap: var(--space-lg);
+    margin-top: var(--space-lg);
+  }
+
+  @media (min-width: 36rem) {
+    .category__grid {
+      column-count: 2;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .category__grid {
+      column-count: 3;
+    }
+  }
+
+  @media (min-width: 90rem) {
+    .category__grid {
+      column-count: 4;
+    }
+  }
+</style>

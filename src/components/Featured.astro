@@ -1,0 +1,67 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  settings: CollectionEntry<'siteSettings'>;
+}
+
+const { settings } = Astro.props;
+const { heroHighlight } = settings.data;
+---
+
+<section class="featured">
+  <div class="featured__inner container">
+    <p class="featured__label">A venir</p>
+    <p class="featured__text accent">{heroHighlight.text}</p>
+    {heroHighlight.link && (
+      <a href={heroHighlight.link} class="featured__link">En savoir plus</a>
+    )}
+  </div>
+</section>
+
+<style>
+  .featured {
+    padding-block: var(--space-xl);
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-muted);
+    border-bottom: 1px solid var(--color-muted);
+  }
+
+  .featured__inner {
+    text-align: center;
+  }
+
+  .featured__label {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-grey);
+    margin-bottom: var(--space-sm);
+  }
+
+  .featured__text {
+    font-size: var(--text-xl);
+    color: var(--color-dark);
+    max-width: 36rem;
+    margin-inline: auto;
+    line-height: 1.6;
+  }
+
+  .featured__link {
+    display: inline-block;
+    margin-top: var(--space-md);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--color-black);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .featured__link:hover {
+    color: var(--color-grey);
+    border-color: var(--color-grey);
+  }
+</style>
