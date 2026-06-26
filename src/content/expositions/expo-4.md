@@ -1,8 +1,8 @@
 ---
-title: "TODO: titre de l'exposition"
-location: "TODO: lieu"
-startDate: 2020-01-01
-endDate: 2020-01-01
+title: Valse des sens
+location: Aéroport Nice Cote d'Azur
+startDate: 2016-05-02
+endDate: 2016-06-30
 image: ../../assets/expo/expo4.jpg
-description: "TODO: demander les détails à la cliente. Image expo4.jpg du site original."
+description: ""
 ---
