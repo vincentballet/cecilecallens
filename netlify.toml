@@ -5,7 +5,7 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# Security and cache headers
+# Security headers (public pages)
 [[headers]]
   for = "/*"
   [headers.values]
@@ -13,6 +13,12 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Decap CMS uses iframes internally — override X-Frame-Options for /admin
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
 
 [[headers]]
   for = "/fonts/*"
