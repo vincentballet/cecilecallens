@@ -29,75 +29,82 @@ function formatDate(d: Date): string {
 
 <section id="expositions" class="expositions">
   <div class="expositions__inner container">
-    <h2 class="expositions__heading">Expositions</h2>
+    <details class="expositions__details" open>
+      <summary class="expositions__summary">
+        <h2 class="expositions__heading">Expositions</h2>
+        <svg class="expositions__chevron" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </summary>
 
-    {upcoming.length > 0 && (
-      <div class="expositions__group">
-        <h3 class="expositions__subheading">Prochaines expositions</h3>
-        <ul class="expositions__list">
-          {upcoming.map((expo) => (
-            <li class="expositions__item">
-              {expo.data.image && (
-                <div class="expositions__image-wrap">
-                  <Image
-                    src={expo.data.image}
-                    alt={expo.data.title}
-                    width={600}
-                    height={400}
-                    class="expositions__img"
-                    loading="lazy"
-                  />
-                </div>
-              )}
-              <div class="expositions__content">
-                <h4 class="expositions__title">{expo.data.title}</h4>
-                <p class="expositions__date">
-                  Du {formatDate(expo.data.startDate)} au {formatDate(expo.data.endDate)}
-                </p>
-                <p class="expositions__location">{expo.data.location}</p>
-                {expo.data.description && (
-                  <p class="expositions__description">{expo.data.description}</p>
+      {upcoming.length > 0 && (
+        <div class="expositions__group">
+          <h3 class="expositions__subheading">Prochaines expositions</h3>
+          <ul class="expositions__list">
+            {upcoming.map((expo) => (
+              <li class="expositions__item">
+                {expo.data.image && (
+                  <div class="expositions__image-wrap">
+                    <Image
+                      src={expo.data.image}
+                      alt={expo.data.title}
+                      width={600}
+                      height={400}
+                      class="expositions__img"
+                      loading="lazy"
+                    />
+                  </div>
                 )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
+                <div class="expositions__content">
+                  <h4 class="expositions__title">{expo.data.title}</h4>
+                  <p class="expositions__date">
+                    Du {formatDate(expo.data.startDate)} au {formatDate(expo.data.endDate)}
+                  </p>
+                  <p class="expositions__location">{expo.data.location}</p>
+                  {expo.data.description && (
+                    <p class="expositions__description">{expo.data.description}</p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-    {past.length > 0 && (
-      <div class="expositions__group">
-        <h3 class="expositions__subheading">Expositions passées</h3>
-        <ul class="expositions__list">
-          {past.map((expo) => (
-            <li class="expositions__item expositions__item--past">
-              {expo.data.image && (
-                <div class="expositions__image-wrap">
-                  <Image
-                    src={expo.data.image}
-                    alt={expo.data.title}
-                    width={600}
-                    height={400}
-                    class="expositions__img"
-                    loading="lazy"
-                  />
-                </div>
-              )}
-              <div class="expositions__content">
-                <h4 class="expositions__title">{expo.data.title}</h4>
-                <p class="expositions__date">
-                  Du {formatDate(expo.data.startDate)} au {formatDate(expo.data.endDate)}
-                </p>
-                <p class="expositions__location">{expo.data.location}</p>
-                {expo.data.description && (
-                  <p class="expositions__description">{expo.data.description}</p>
+      {past.length > 0 && (
+        <div class="expositions__group">
+          <h3 class="expositions__subheading">Expositions passées</h3>
+          <ul class="expositions__list">
+            {past.map((expo) => (
+              <li class="expositions__item expositions__item--past">
+                {expo.data.image && (
+                  <div class="expositions__image-wrap">
+                    <Image
+                      src={expo.data.image}
+                      alt={expo.data.title}
+                      width={600}
+                      height={400}
+                      class="expositions__img"
+                      loading="lazy"
+                    />
+                  </div>
                 )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
+                <div class="expositions__content">
+                  <h4 class="expositions__title">{expo.data.title}</h4>
+                  <p class="expositions__date">
+                    Du {formatDate(expo.data.startDate)} au {formatDate(expo.data.endDate)}
+                  </p>
+                  <p class="expositions__location">{expo.data.location}</p>
+                  {expo.data.description && (
+                    <p class="expositions__description">{expo.data.description}</p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </details>
   </div>
 </section>
 
@@ -108,6 +115,44 @@ function formatDate(d: Date): string {
     border-top: 1px solid var(--color-muted);
   }
 
+  .expositions__details {
+    border: none;
+  }
+
+  .expositions__summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    -webkit-user-select: none;
+    margin-bottom: var(--space-xl);
+  }
+
+  .expositions__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .expositions__summary::marker {
+    content: '';
+  }
+
+  .expositions__chevron {
+    color: var(--color-grey);
+    transition: transform 0.3s var(--ease-out);
+    flex-shrink: 0;
+  }
+
+  .expositions__details[open] > .expositions__summary .expositions__chevron {
+    transform: rotate(0deg);
+  }
+
+  .expositions__details:not([open]) > .expositions__summary .expositions__chevron {
+    transform: rotate(-90deg);
+  }
+
   .expositions__heading {
     font-family: var(--font-sans);
     font-weight: 100;
@@ -115,7 +160,7 @@ function formatDate(d: Date): string {
     letter-spacing: 0.08em;
     text-transform: uppercase;
     text-align: center;
-    margin-bottom: var(--space-xl);
+    margin-bottom: 0;
   }
 
   .expositions__group {

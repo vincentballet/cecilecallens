@@ -17,18 +17,25 @@ const sorted = paintings.sort((a, b) => {
 
 <section id={category.data.slug} class="category" aria-label={category.data.title}>
   <div class="category__inner container">
-    <h2 class="category__title">{category.data.title}</h2>
-    {category.data.description && (
-      <p class="category__description accent">{category.data.description}</p>
-    )}
-    <div class="category__grid">
-      {sorted.map((painting, i) => (
-        <PaintingCard
-          painting={painting}
-          loading={isFirst && i < 4 ? 'eager' : 'lazy'}
-        />
-      ))}
-    </div>
+    <details class="category__details" open>
+      <summary class="category__summary">
+        <h2 class="category__title">{category.data.title}</h2>
+        <svg class="category__chevron" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </summary>
+      {category.data.description && (
+        <p class="category__description accent">{category.data.description}</p>
+      )}
+      <div class="category__grid">
+        {sorted.map((painting, i) => (
+          <PaintingCard
+            painting={painting}
+            loading={isFirst && i < 4 ? 'eager' : 'lazy'}
+          />
+        ))}
+      </div>
+    </details>
   </div>
 </section>
 
@@ -41,13 +48,50 @@ const sorted = paintings.sort((a, b) => {
     background: var(--color-bg);
   }
 
+  .category__details {
+    border: none;
+  }
+
+  .category__summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .category__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .category__summary::marker {
+    content: '';
+  }
+
+  .category__chevron {
+    color: var(--color-grey);
+    transition: transform 0.3s var(--ease-out);
+    flex-shrink: 0;
+  }
+
+  .category__details[open] > .category__summary .category__chevron {
+    transform: rotate(0deg);
+  }
+
+  .category__details:not([open]) > .category__summary .category__chevron {
+    transform: rotate(-90deg);
+  }
+
   .category__title {
     font-family: var(--font-sans);
     font-weight: 100;
     font-size: var(--text-2xl);
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    margin-bottom: var(--space-sm);
+    margin-bottom: 0;
     text-align: center;
   }
 
@@ -55,6 +99,7 @@ const sorted = paintings.sort((a, b) => {
     text-align: center;
     color: var(--color-grey);
     margin-bottom: var(--space-lg);
+    margin-top: var(--space-sm);
     font-size: var(--text-lg);
   }
 
