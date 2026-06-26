@@ -68,11 +68,8 @@ collections:
     format: frontmatter
     extension: md
     create: true
-    nested:
-      depth: 2
     slug: "{{slug}}"
     summary: "{{title}} — {{category}}"
-    meta: { path: { widget: string, label: "Catégorie (dossier)", index_file: "" } }
     fields:
       - label: Titre
         name: title
@@ -89,7 +86,7 @@ collections:
         name: image
         widget: image
         media_folder: /src/assets/paintings
-        public_folder: ../../../assets/paintings
+        public_folder: ../../assets/paintings
         hint: "Photo du tableau. Les images existantes sont classées par catégorie."
       - label: Dimensions
         name: dimensions
