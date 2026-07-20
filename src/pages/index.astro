@@ -140,12 +140,9 @@ const allLd = [personLd, ...artworkLd, ...eventLd];
   document.querySelectorAll('.painting__zoom').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const el = e.currentTarget as HTMLButtonElement;
-      // Get the optimised image src from the sibling <img> or <picture>
-      const frame = el.closest('.painting__frame');
-      const img = frame?.querySelector('img') as HTMLImageElement | null;
-      if (img) {
-        openLightbox(img.currentSrc || img.src, el.dataset.alt || '');
-      }
+      const frame = el.closest('.painting__frame') as HTMLElement | null;
+      const fullSrc = frame?.dataset.full;
+      if (frame && fullSrc) openLightbox(fullSrc, el.dataset.alt || '');
     });
   });
 
@@ -154,7 +151,9 @@ const allLd = [personLd, ...artworkLd, ...eventLd];
     const el = img as HTMLImageElement;
     el.style.cursor = 'pointer';
     el.addEventListener('click', () => {
-      openLightbox(el.currentSrc || el.src, el.alt);
+      const frame = el.closest('.painting__frame') as HTMLElement | null;
+      const fullSrc = frame?.dataset.full;
+      openLightbox(fullSrc || el.currentSrc || el.src, el.alt);
     });
   });
 
